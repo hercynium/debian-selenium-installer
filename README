@@ -1,0 +1,18 @@
+
+This is a fairly simple script that should make it easy to get
+selenium running as a headless daemon on debian-based servers.
+
+It will install all the dependencies needed to run the selenium-rc
+server, then, if necessary, will download selenium-rc and install
+it under /opt.
+
+It will then generate an init script (/etc/init.d/selenium) and
+a default config file (/etc/default/selenium) that should be
+sufficient to make it all work nicely.
+
+This is definitely not the most secure or efficient means of setting
+up selenium. There are parts of the init script that I know are
+horribly ugly and hacky... however, it works well for me, and I am
+hoping that people will send me lots of recommendations, bug reports
+and patches!
+
