@@ -12,6 +12,14 @@ sudo aptitude install \
   sun-java6-javadb \
   xvfb
 
+# create selenium user acct.
+sudo adduser --quiet --system --disabled-login --group \
+  --gecos="Selenium-RC Server User Account" \
+  --home="/var/lib/selenium" selenium
+sudo mkdir -p /var/lib/selenium
+sudo chown -R selenium:selenium /var/lib/selenium
+
+
 # download, unpack & install under /opt
 if [ ! -d "/opt/selenium-server-$SELENIUM_RC_VER" ]; then
     # TODO: download & unpack into a safe tempdir, and clean up after.
@@ -52,8 +60,8 @@ SELENIUM_LOG_DIR=/var/log/selenium
 SELENIUM_PORT=4444
 
 ### user/group to run selenium server as
-SELENIUM_USER=nobody
-SELENIUM_GROUP=nogroup
+SELENIUM_USER=selenium
+SELENIUM_GROUP=selenium
 
 ### additional options to pass to selenium-server.jar on the command line
 SELENIUM_OPT=""
@@ -99,8 +107,8 @@ SELENIUM_FIREFOX_PROFILE_NAME=SeleniumUser
 SELENIUM_PID_FILE=/var/run/selenium.pid
 SELENIUM_LOG_DIR=/var/log/selenium
 SELENIUM_PORT=4444
-SELENIUM_USER=nobody
-SELENIUM_GROUP=nogroup
+SELENIUM_USER=selenium
+SELENIUM_GROUP=selenium
 SELENIUM_OPT=""
 SELENIUM_LOGGING=0
 SELENIUM_LOG_BROWSER=0
@@ -192,8 +200,6 @@ function init_selenium() {
 	trap - EXIT
 
 	# NOTE: bad hack. should target just .mozilla and .gnome2 dirs.
-	# much better would be to create a selenium user with a real homedir
-	# to mess with, instead of relying on "nobody" :-/
 	if ! chown -R "$USER":"$GROUP" "$USER_HOME"; then
 		log_failure_msg "could not set ownership on $USER_HOME"
 		exit 1
