@@ -24,11 +24,16 @@ sudo chown -R selenium:selenium /var/lib/selenium
 # download, unpack & install under /opt
 if [ ! -d "/opt/selenium-server-$SELENIUM_RC_VER" ]; then
     # TODO: download & unpack into a safe tempdir, and clean up after.
-    wget "http://release.seleniumhq.org/selenium-remote-control/$SELENIUM_RC_VER/selenium-remote-control-$SELENIUM_RC_VER-dist.zip"
+
+    [ -e "selenium-remote-control-$SELENIUM_RC_VER-dist.zip" ] ||
+        wget "http://release.seleniumhq.org/selenium-remote-control/$SELENIUM_RC_VER/selenium-remote-control-$SELENIUM_RC_VER-dist.zip"
+
     # selenium 1.0.3, is located on a different host, and is broken.
     #wget "http://selenium.googlecode.com/files/selenium-remote-control-$SELENIUM_RC_VER.zip"
+
     unzip "selenium-remote-control-$SELENIUM_RC_VER-dist.zip"
-    sudo mv "selenium-server-$SELENIUM_RC_VER" "/opt/selenium-server-$SELENIUM_RC_VER"
+    sudo rm -rf "/opt/selenium-server-$SELENIUM_RC_VER"
+    sudo mv "selenium-remote-control-$SELENIUM_RC_VER/selenium-server-$SELENIUM_RC_VER" "/opt/selenium-server-$SELENIUM_RC_VER"
     sudo chown -R root:root "/opt/selenium-server-$SELENIUM_RC_VER"
 else
     echo
