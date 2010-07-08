@@ -2,7 +2,8 @@
 
 set -e
 
-SELENIUM_RC_VER="1.0.3"
+# if you change this, search and replace throgh this file as well.
+SELENIUM_RC_VER="1.0.1"
 
 # install dependencies (not including browser)
 sudo aptitude install \
@@ -23,11 +24,12 @@ sudo chown -R selenium:selenium /var/lib/selenium
 # download, unpack & install under /opt
 if [ ! -d "/opt/selenium-server-$SELENIUM_RC_VER" ]; then
     # TODO: download & unpack into a safe tempdir, and clean up after.
-    wget "http://selenium.googlecode.com/files/selenium-remote-control-$SELENIUM_RC_VER.zip"
-
-    unzip "selenium-remote-control-$SELENIUM_RC_VER.zip"
-
+    wget "http://release.seleniumhq.org/selenium-remote-control/$SELENIUM_RC_VER/selenium-remote-control-$SELENIUM_RC_VER-dist.zip"
+    # selenium 1.0.3, is located on a different host, and is broken.
+    #wget "http://selenium.googlecode.com/files/selenium-remote-control-$SELENIUM_RC_VER.zip"
+    unzip "selenium-remote-control-$SELENIUM_RC_VER-dist.zip"
     sudo mv "selenium-server-$SELENIUM_RC_VER" "/opt/selenium-server-$SELENIUM_RC_VER"
+    sudo chown -R root:root "/opt/selenium-server-$SELENIUM_RC_VER"
 else
     echo
     echo "Selenium seems to already be installed under /opt/selenium-server-$SELENIUM_RC_VER"
@@ -40,7 +42,7 @@ cat <<'END_TXT' | sudo tee /etc/default/selenium > /dev/null
 
 ### where to find java and the selenium-server.jar file
 SELENIUM_JAVA_BIN=/usr/bin/java
-SELENIUM_JAR=/opt/selenium-server-1.0.3/selenium-server.jar
+SELENIUM_JAR=/opt/selenium-server-1.0.1/selenium-server.jar
 
 ### selenium requires xvfb to run as a "headless daemon"
 SELENIUM_XVFB_BIN=/usr/bin/xvfb-run
@@ -91,7 +93,7 @@ NAME=selenium
 
 SELENIUM_JAVA_BIN=/usr/bin/java
 SELENIUM_XVFB_BIN=/usr/bin/xvfb-run
-SELENIUM_JAR=/opt/selenium-server-1.0.3/selenium-server.jar
+SELENIUM_JAR=/opt/selenium-server-1.0.1/selenium-server.jar
 SELENIUM_PORT=4444
 SELENIUM_USER=selenium
 SELENIUM_GROUP=selenium
@@ -370,7 +372,7 @@ with the following command:
 
 Or manually like so:
 
- xvfb-run --auto-servernum java -jar /opt/selenium-server-1.0.3/selenium-server.jar
+ xvfb-run --auto-servernum java -jar /opt/selenium-server-1.0.1/selenium-server.jar
 
 If you do not have a browser like firefox or iceweasel installed,
 do that first. Selenium should select the browser automatically.
