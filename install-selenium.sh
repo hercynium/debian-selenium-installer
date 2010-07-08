@@ -42,21 +42,11 @@ cat <<'END_TXT' | sudo tee /etc/default/selenium > /dev/null
 SELENIUM_JAVA_BIN=/usr/bin/java
 SELENIUM_JAR=/opt/selenium-server-1.0.3/selenium-server.jar
 
-### selenium requires xvfb to as a "headless daemon"
+### selenium requires xvfb to run as a "headless daemon"
 SELENIUM_XVFB_BIN=/usr/bin/xvfb-run
 
-### selenium requires a writable dir containing a firefox profile
-### in order to properly drive a live instance of firefox
-SELENIUM_FIREFOX_PROFILE_DIR=/var/lib/selenium/firefox-profiles
-SELENIUM_FIREFOX_PROFILE_NAME=SeleniumUser
-
-### where to write the pid file
-SELENIUM_PID_FILE=/var/run/selenium.pid
-
-### selenium needs it's own writable dir for logging
-SELENIUM_LOG_DIR=/var/log/selenium
-
 ### tcp port for selenium to listen on
+### NOTE: must be greater than 1024
 SELENIUM_PORT=4444
 
 ### user/group to run selenium server as
@@ -102,10 +92,6 @@ NAME=selenium
 SELENIUM_JAVA_BIN=/usr/bin/java
 SELENIUM_XVFB_BIN=/usr/bin/xvfb-run
 SELENIUM_JAR=/opt/selenium-server-1.0.3/selenium-server.jar
-SELENIUM_FIREFOX_PROFILE_DIR=/var/lib/selenium/firefox-profiles
-SELENIUM_FIREFOX_PROFILE_NAME=SeleniumUser
-SELENIUM_PID_FILE=/var/run/selenium.pid
-SELENIUM_LOG_DIR=/var/log/selenium
 SELENIUM_PORT=4444
 SELENIUM_USER=selenium
 SELENIUM_GROUP=selenium
@@ -122,15 +108,17 @@ SELENIUM_LOG_BROWSER=0
 
 JAVA_BIN=$SELENIUM_JAVA_BIN
 XVFB_BIN=$SELENIUM_XVFB_BIN
-PROFILE_DIR=$SELENIUM_FIREFOX_PROFILE_DIR
-PROFILE_NAME=$SELENIUM_FIREFOX_PROFILE_NAME
-PID_FILE=$SELENIUM_PID_FILE
-LOG_DIR=$SELENIUM_LOG_DIR
 PORT=$SELENIUM_PORT
 USER=$SELENIUM_USER
 GROUP=$SELENIUM_GROUP
 
+### hard-coded vars & vars derived from other vars
 USER_HOME=`getent passwd $USER | cut -d':' -f6`
+PROFILE_DIR=$USER_HOME/firefox-profiles
+PROFILE_NAME=SeleniumUser
+PID_FILE=/var/run/selenium.pid
+LOG_DIR=$USER_HOME/logs
+LOG_LINK=/var/log/selenium
 LOG_FILE_DEBUG=$LOG_DIR/selenium-server.log
 LOG_FILE_XVFB=$LOG_DIR/xvfb.log
 
