@@ -135,22 +135,22 @@ function init_selenium() {
 
 	### make sure the Selenium profile dir exists and is set up properly.
 	if [ ! -d "$PROFILE_DIR/$PROFILE_NAME" ]; then
-	    if ! mkdir -p "$PROFILE_DIR/$PROFILE_NAME"; then
+		if ! mkdir -p "$PROFILE_DIR/$PROFILE_NAME"; then
 		log_failure_msg "could not create $PROFILE_DIR/$PROFILE_NAME"
 		exit 1
-	    fi
+		fi
 	fi
 	if ! chown -R "$USER":"$GROUP" "$PROFILE_DIR"; then
-	    log_failure_msg "could not set ownership on $PROFILE_DIR"
-	    exit 1
+		log_failure_msg "could not set ownership on $PROFILE_DIR"
+		exit 1
 	fi
 
 
 	### set up a mozilla profile dir for the user
 	# create temp file with default profile.ini
 	if ! TMP_PROF=$(tempfile); then 
-	    log_failure_msg "could not create a mozilla profile"
-	    exit 1
+		log_failure_msg "could not create a mozilla profile"
+		exit 1
 	fi
 	# I hate shell.
 	trap "rm -f -- '$TMP_PROF'" EXIT
@@ -195,40 +195,44 @@ function init_selenium() {
 
 	### make sure xvfb-run is available
 	if [ ! -x "$XVFB_BIN" ]; then
-	    log_failure_msg "can not execute $XVFB_BIN"
-	    exit 1
+		log_failure_msg "can not execute $XVFB_BIN"
+		exit 1
 	fi
 
 	### make sure java and the selenium jar are available
 	if [ ! -x "$JAVA_BIN" ]; then
-	    log_failure_msg "can not execute $JAVA_BIN"
-	    exit 1
+		log_failure_msg "can not execute $JAVA_BIN"
+		exit 1
 	fi
 	if [ ! -e "$SELENIUM_JAR" ]; then
-	    log_failure_msg "can not find $SELENIUM_JAR"
-	    exit 1
+		log_failure_msg "can not find $SELENIUM_JAR"
+		exit 1
 	fi
 
 	### make sure we can write log files
 	if [ ! -d "$LOG_DIR" ]; then
-	    if ! mkdir -p "$LOG_DIR"; then
-		log_failure_msg "could not create $LOG_DIR"
-		exit 1;
-	    fi
-	    if ! chown "$USER":"$GROUP" "$LOG_DIR"; then
-		log_failure_msg "could not set ownership on $LOG_DIR"
+		if ! mkdir -p "$LOG_DIR"; then
+			log_failure_msg "could not create $LOG_DIR"
+			exit 1;
+		fi
+		if ! chown "$USER":"$GROUP" "$LOG_DIR"; then
+			log_failure_msg "could not set ownership on $LOG_DIR"
+			exit 1
+		fi
+	fi
+	if ! ln -sf $LOG_DIR $LOG_LINK; then
+		log_failure_msg "could not link $LOG_LINK to $LOG_DIR"
 		exit 1
-	    fi
 	fi
 
 
 	### make sure we can manage our pid file
 	PID_DIR=`dirname $PID_FILE`
 	if [ ! -d "$PID_DIR" ]; then
-	    if ! mkdir -p $PID_DIR; then
-		log_failure_msg "could not create $PID_DIR"
-		exit 1;
-	    fi
+		if ! mkdir -p $PID_DIR; then
+			log_failure_msg "could not create $PID_DIR"
+			exit 1;
+		fi
 	fi
 }
 
@@ -237,7 +241,7 @@ function init_selenium() {
 ### does what you think it does :)
 function start_selenium() {
 
-    init_selenium || return $?    
+    init_selenium || return $?
 
     if [ $SELENIUM_LOGGING ]; then
         sel_log_opts="-log $LOG_FILE_DEBUG"
@@ -250,7 +254,7 @@ function start_selenium() {
         PID=$( cat $PID_FILE )
         log_warning_msg "already running (pid $PID)"
         exit 0
-    fi 
+    fi
 
     start-stop-daemon \
         --start \
@@ -295,48 +299,48 @@ RETVAL=0
 case "$1" in
   start)
 	log_daemon_msg "Starting $NAME"
-        start_selenium
-        RETVAL=$?
+	start_selenium
+	RETVAL=$?
 	;;
   stop)
-        pidofproc -p $PID_FILE $JAVA_BIN >/dev/null
+	pidofproc -p $PID_FILE $JAVA_BIN >/dev/null
 	status=$?
 	if [ $status -eq 0 ]; then
-            PID=$( cat $PID_FILE )
-	    log_daemon_msg "Stopping $NAME (pid $PID)"
-	    killproc -p $PID_FILE $JAVA_BIN && rm -f $PID_FILE
-        else
-            log_warning_msg "$NAME is not currently running"
-            exit 0
-        fi
-        RETVAL=$?
+		PID=$( cat $PID_FILE )
+		log_daemon_msg "Stopping $NAME (pid $PID)"
+		killproc -p $PID_FILE $JAVA_BIN && rm -f $PID_FILE
+	else
+		log_warning_msg "$NAME is not currently running"
+		exit 0
+	fi
+	RETVAL=$?
 	;;
   restart|force-reload)
-        pidofproc -p $PID_FILE $JAVA_BIN >/dev/null
-        if [ $? -eq 0 ]; then
-            PID=$( cat $PID_FILE )
-	    log_daemon_msg "Restarting $NAME (pid $PID)"
-   	    killproc -p $PID_FILE $JAVA_BIN && rm -f $PID_FILE
-            if [ $? -eq 0 ]; then
-                start_selenium
-            fi
-        else
-            log_daemon_msg "Starting $NAME"
-	    start_selenium
-        fi
-        RETVAL=$?
+	pidofproc -p $PID_FILE $JAVA_BIN >/dev/null
+	if [ $? -eq 0 ]; then
+		PID=$( cat $PID_FILE )
+		log_daemon_msg "Restarting $NAME (pid $PID)"
+		killproc -p $PID_FILE $JAVA_BIN && rm -f $PID_FILE
+		if [ $? -eq 0 ]; then
+			start_selenium
+		fi
+	else
+		log_daemon_msg "Starting $NAME"
+		start_selenium
+	fi
+	RETVAL=$?
 	;;
   status)
-        pidofproc -p $PID_FILE $JAVA_BIN >/dev/null
+	pidofproc -p $PID_FILE $JAVA_BIN >/dev/null
 	status=$?
 	if [ $status -eq 0 ]; then
-            PID=$( cat $PID_FILE )
-            log_success_msg "$NAME is running (pid $PID)"
-        else
-            log_success_msg "$NAME is not running"
-        fi
+		PID=$( cat $PID_FILE )
+		log_success_msg "$NAME is running (pid $PID)"
+	else
+		log_success_msg "$NAME is not running"
+	fi
 	exit $status
-        ;;
+	;;
   *)
 	echo "Usage: $0 {start|stop|restart|force-reload|status}"
 	exit 1
@@ -345,9 +349,9 @@ esac
 
 ### report sucess or failure
 if [ $RETVAL -eq 0 ]; then
-    log_success_msg
+	log_success_msg "SUCCESS"
 else
-    log_failure_msg
+	log_failure_msg "FAIL"
 fi
 
 exit $RETVAL
