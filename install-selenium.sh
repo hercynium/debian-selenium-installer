@@ -6,19 +6,18 @@ set -e
 SELENIUM_RC_VER="1.0.1"
 
 # install dependencies (not including browser)
-sudo aptitude install \
-  java6-runtime-headless \
+apt-get install \
   sun-java6-jre \
   sun-java6-fonts \
   sun-java6-javadb \
   xvfb
 
 # create selenium user acct.
-sudo adduser --quiet --system --disabled-login --group \
+adduser --quiet --system --disabled-login --group \
   --gecos="Selenium-RC Server User Account" \
   --home="/var/lib/selenium" selenium
-sudo mkdir -p /var/lib/selenium
-sudo chown -R selenium:selenium /var/lib/selenium
+mkdir -p /var/lib/selenium
+chown -R selenium:selenium /var/lib/selenium
 
 
 # download, unpack & install under /opt
@@ -32,9 +31,9 @@ if [ ! -d "/opt/selenium-server-$SELENIUM_RC_VER" ]; then
     #wget "http://selenium.googlecode.com/files/selenium-remote-control-$SELENIUM_RC_VER.zip"
 
     unzip "selenium-remote-control-$SELENIUM_RC_VER-dist.zip"
-    sudo rm -rf "/opt/selenium-server-$SELENIUM_RC_VER"
-    sudo mv "selenium-remote-control-$SELENIUM_RC_VER/selenium-server-$SELENIUM_RC_VER" "/opt/selenium-server-$SELENIUM_RC_VER"
-    sudo chown -R root:root "/opt/selenium-server-$SELENIUM_RC_VER"
+    rm -rf "/opt/selenium-server-$SELENIUM_RC_VER"
+    mv "selenium-remote-control-$SELENIUM_RC_VER/selenium-server-$SELENIUM_RC_VER" "/opt/selenium-server-$SELENIUM_RC_VER"
+    chown -R root:root "/opt/selenium-server-$SELENIUM_RC_VER"
 else
     echo
     echo "Selenium seems to already be installed under /opt/selenium-server-$SELENIUM_RC_VER"
@@ -42,7 +41,7 @@ else
 fi
 
 # create /etc/default/selenium
-cat <<'END_TXT' | sudo tee /etc/default/selenium > /dev/null
+cat <<'END_TXT' | tee /etc/default/selenium > /dev/null
 # sourced by /etc/init.d/selenium
 
 ### where to find java and the selenium-server.jar file
@@ -73,7 +72,7 @@ END_TXT
 
 
 # create init script...
-cat <<'END_TXT' | sudo tee /etc/init.d/selenium > /dev/null
+cat <<'END_TXT' | tee /etc/init.d/selenium > /dev/null
 #! /bin/bash
 ### BEGIN INIT INFO
 # Provides:          selenium
@@ -365,7 +364,7 @@ exit $RETVAL
 
 END_TXT
 
-sudo chmod +x /etc/init.d/selenium
+chmod +x /etc/init.d/selenium
 
 # done!
 cat <<END_TXT
