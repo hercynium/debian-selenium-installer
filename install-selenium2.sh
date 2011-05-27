@@ -3,11 +3,10 @@
 set -e
 
 # if you change this, search and replace throgh this file as well.
-SELENIUM2_VER="2.0a4"
+SELENIUM2_VER="2.0b3"
 
 # install dependencies (not including browser)
-sudo aptitude install \
-  java6-runtime-headless \
+apt-get install \
   sun-java6-jre \
   sun-java6-fonts \
   sun-java6-javadb \
@@ -15,11 +14,11 @@ sudo aptitude install \
 
 # create selenium user acct.
 ### TODO: fail if it exists, or delete & recreate
-sudo adduser --quiet --system --disabled-login --group \
+adduser --quiet --system --disabled-login --group \
   --gecos="Selenium2 Server User Account" \
   --home="/var/lib/selenium2" selenium2
-sudo mkdir -p /var/lib/selenium2
-sudo chown -R selenium2:selenium2 /var/lib/selenium2
+mkdir -p /var/lib/selenium2
+chown -R selenium2:selenium2 /var/lib/selenium2
 
 
 # download, unpack & install under /opt
@@ -35,7 +34,7 @@ else
 fi
 
 # create /etc/default/selenium2
-cat <<END_TXT | sudo tee /etc/default/selenium2 > /dev/null
+cat <<END_TXT | tee /etc/default/selenium2 > /dev/null
 # sourced by /etc/init.d/selenium2
 
 ### where to find java and the selenium-server.jar file
@@ -44,7 +43,7 @@ SELENIUM_JAR=/opt/selenium-server-$SELENIUM2_VER/selenium-server-standalone-$SEL
 
 END_TXT
 
-cat <<'END_TXT' | sudo tee -a /etc/default/selenium2 > /dev/null
+cat <<'END_TXT' | tee -a /etc/default/selenium2 > /dev/null
 ### selenium requires xvfb to run as a "headless daemon"
 SELENIUM_XVFB_BIN=/usr/bin/xvfb-run
 
@@ -69,7 +68,7 @@ END_TXT
 
 
 # create init script...
-cat <<'END_TXT' | sudo tee /etc/init.d/selenium2 > /dev/null
+cat <<'END_TXT' | tee /etc/init.d/selenium2 > /dev/null
 #! /bin/bash
 ### BEGIN INIT INFO
 # Provides:          selenium2
@@ -96,11 +95,11 @@ SELENIUM_JAVA_BIN=/usr/bin/java
 SELENIUM_XVFB_BIN=/usr/bin/xvfb-run
 END_TXT
 
-cat <<END_TXT | sudo tee -a /etc/init.d/selenium2 > /dev/null
+cat <<END_TXT | tee -a /etc/init.d/selenium2 > /dev/null
 SELENIUM_JAR=/opt/selenium-server-$SELENIUM2_VER/selenium-server-standalone-$SELENIUM2_VER.jar
 END_TXT
 
-cat <<'END_TXT' | sudo tee -a /etc/init.d/selenium2 > /dev/null
+cat <<'END_TXT' | tee -a /etc/init.d/selenium2 > /dev/null
 SELENIUM_PORT=4444
 SELENIUM_USER=selenium2
 SELENIUM_GROUP=selenium2
@@ -367,7 +366,7 @@ exit $RETVAL
 
 END_TXT
 
-sudo chmod +x /etc/init.d/selenium2
+chmod +x /etc/init.d/selenium2
 
 # done!
 cat <<END_TXT
